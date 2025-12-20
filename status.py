@@ -4,7 +4,7 @@ from sys import stderr
 
 from loguru import logger
 import config
-from telethon.sync import TelegramClient
+from telethon import TelegramClient
 
 logger.remove()
 logger.add(
@@ -64,7 +64,7 @@ async def port_checks() -> None:
                 logger.warning("Все ноды ответили о закрытом порту!")
                 await client.send_message(
                     entity=config.status_chat,
-                    message="❌ : Кажется, сервер упал! @trassert",
+                    message="❌ : Порт не отвечает **@trassert**",
                 )
                 await asyncio.sleep(900)
             else:
@@ -75,9 +75,35 @@ async def port_checks() -> None:
             await asyncio.sleep(60)
 
 
+async def charge_checks() -> None:
+    last_state = True
+    while True:
+        with open(config.battery_path) as f:
+            if "Discharging" in f.read() and last_state is True:
+                logger.warning("Нет зарядки!")
+                await client.send_message(
+                    entity=config.status_chat,
+                    message="❌ : Работа от ИБП **@trassert**",
+                )
+                last_state = False
+            elif last_state is False:
+                logger.info("Сервер работает от сети.")
+                last_state = True
+        await asyncio.sleep(10)
+
+
 async def main():
     await client.start(bot_token=config.status_bot_token)
-    await port_checks()
+
+    try:
+        await asyncio.gather(
+            charge_checks(),
+            port_checks(),
+        )
+    except KeyboardInterrupt:
+        logger.info("Остановка по Ctrl+C")
+    finally:
+        await client.disconnect()
 
 
 if __name__ == "__main__":
