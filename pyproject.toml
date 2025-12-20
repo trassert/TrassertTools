@@ -1,0 +1,12 @@
+[project]
+name = "trasserttools"
+version = "0.1.0"
+description = "Tools to better Telegram and VK"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "cryptg>=0.5.2",
+    "loguru>=0.7.3",
+    "telethon>=1.42.0",
+    "vkbottle>=4.6.2",
+]
