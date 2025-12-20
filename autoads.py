@@ -3,7 +3,7 @@ import asyncio
 from telethon.sync import TelegramClient
 from loguru import logger
 from sys import stderr
-from . import config
+import config
 
 logger.remove()
 logger.add(
@@ -20,8 +20,8 @@ logger.info("Start logging")
 
 client = TelegramClient(
     session="ads",
-    api_id=config.app_id,
-    api_hash=config.app_hash,
+    api_id=config.ads_app_id,
+    api_hash=config.ads_app_hash,
     system_version="4.16.30-vxCUSTOM",
     device_model=config.device_model,
     system_lang_code="ru",

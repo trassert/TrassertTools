@@ -3,7 +3,7 @@ import aiohttp
 from sys import stderr
 
 from loguru import logger
-from . import config
+import config
 from telethon.sync import TelegramClient
 
 logger.remove()
@@ -17,11 +17,12 @@ logger.add(
     backtrace=False,
     diagnose=False,
 )
+logger.info("Start logging")
 
 client = TelegramClient(
-    session="ads",
-    api_id=config.app_id,
-    api_hash=config.app_hash,
+    session="status",
+    api_id=config.status_app_id,
+    api_hash=config.status_app_hash,
     system_version="4.16.30-vxCUSTOM",
     device_model=config.device_model,
     system_lang_code="ru",
@@ -57,6 +58,7 @@ async def check_port(ip: str, port: int) -> bool:
 
 async def port_checks() -> None:
     while True:
+        logger.info("Проверка запущена..")
         try:
             if await check_port(config.status_ip, 25565) is False:
                 logger.warning("Все ноды ответили о закрытом порту!")
@@ -75,7 +77,7 @@ async def port_checks() -> None:
 
 async def main():
     await client.start(bot_token=config.status_bot_token)
-    await client.run_until_disconnected()
+    await port_checks()
 
 
 if __name__ == "__main__":

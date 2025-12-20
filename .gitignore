@@ -11,3 +11,6 @@ wheels/
 
 config.py
 uv.lock
+
+*.session
+*.session-journal

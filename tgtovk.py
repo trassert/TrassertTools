@@ -9,7 +9,7 @@ from telethon.tl.custom import Message
 from vkbottle import Bot
 from vkbottle.tools import PhotoWallUploader
 
-from . import config
+import config
 from loguru import logger
 from sys import stderr
 
@@ -31,9 +31,9 @@ logger.info("Start logging")
 class TelegramToVKTranslator:
     def __init__(self):
         self.telegram_client = TelegramClient(
-            config.session_name,
-            config.app_id,
-            config.app_hash,
+            "tgtovk",
+            config.tgtovk_app_id,
+            config.tgtovk_app_hash,
         )
 
         self.vk_bot = Bot(token=config.vk_token)
