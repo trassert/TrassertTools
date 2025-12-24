@@ -64,7 +64,7 @@ async def port_checks() -> None:
                 logger.warning("Все ноды ответили о закрытом порту!")
                 await client.send_message(
                     entity=config.status_chat,
-                    message="❌ : Порт не отвечает **@trassert**",
+                    message="❌ : Порт сервера не отвечает",
                 )
                 await asyncio.sleep(900)
             else:
@@ -79,16 +79,22 @@ async def charge_checks() -> None:
     last_state = True
     while True:
         with open(config.battery_path) as f:
-            if "Discharging" in f.read() and last_state is True:
-                logger.warning("Нет зарядки!")
-                await client.send_message(
-                    entity=config.status_chat,
-                    message="❌ : Работа от ИБП **@trassert**",
-                )
-                last_state = False
-            elif last_state is False:
-                logger.info("Сервер работает от сети.")
-                last_state = True
+            if "Discharging" in f.read():
+                if last_state is True:
+                    logger.warning("Нет зарядки!")
+                    await client.send_message(
+                        entity=config.status_chat,
+                        message="❌ : Нет зарядки, работа от ИБП",
+                    )
+                    last_state = False
+            else:
+                if last_state is False:
+                    await client.send_message(
+                        entity=config.status_chat,
+                        message="✅ : Зарядка восстановлена.",
+                    )
+                    logger.info("Сервер работает от сети.")
+                    last_state = True
         await asyncio.sleep(10)
 
 
@@ -107,4 +113,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        logger.warning("Закрываемся!")
